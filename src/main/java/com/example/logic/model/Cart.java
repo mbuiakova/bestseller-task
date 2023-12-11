@@ -13,18 +13,18 @@ import java.util.UUID;
 public class Cart {
 
     private UUID userId;
-    private List<Drink> drinks;
+    private List<BasicDrink> drinks;
     private BigDecimal sum;
 
-    public Cart(UUID userId, List<Drink> drinks) {
+    public Cart(UUID userId, List<BasicDrink> drinks) {
         this.userId = userId;
         this.drinks = drinks;
         this.sum = countSum(drinks);
     }
 
-    private BigDecimal countSum(List<Drink> drinks) {
+    private BigDecimal countSum(List<BasicDrink> drinks) {
         Optional<BigDecimal> total = drinks.stream()
-                .map(Drink::getPrice)
+                .map(BasicDrink::getPrice)
                 .reduce(BigDecimal::add);
         return total.orElse(new BigDecimal(-1));
     }
