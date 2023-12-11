@@ -33,4 +33,18 @@ CREATE TABLE ADMIN(
     id uuid,
     name varchar,
     PRIMARY KEY (id)
-)
+);
+
+-- Filling with data.
+INSERT INTO DRINK(id, name, price) VALUES
+   (gen_random_uuid(), 'Black Coffee', 4),
+   (gen_random_uuid(), 'Latte', 5),
+   (gen_random_uuid(), 'Mocha', 6),
+   (gen_random_uuid(), 'Tea', 3);
+
+
+INSERT INTO TOPPING(id, name, price) VALUES
+                                       (gen_random_uuid(), 'Milk', 2),
+                                       (gen_random_uuid(), 'Hazelnut syrup', 3),
+                                       (gen_random_uuid(), 'Chocolate sauce', 5),
+                                       (gen_random_uuid(), 'Lemon', 2);

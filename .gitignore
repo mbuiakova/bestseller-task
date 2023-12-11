@@ -5,3 +5,5 @@
 *.minimal
 .DS_Store
 .ammonite/
+*.class
+target/

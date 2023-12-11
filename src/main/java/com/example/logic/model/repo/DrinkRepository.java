@@ -8,5 +8,6 @@ import java.util.UUID;
 
 public interface DrinkRepository extends JpaRepository<BasicDrink, UUID> {
 
-    Optional<BasicDrink> findByName(String name);
+    Optional<BasicDrink> findByName(final String name);
+    Optional<BasicDrink> findById(final UUID id);
 }

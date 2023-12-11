@@ -1,55 +1,70 @@
 package com.example.logic.controller;
 
 import com.example.logic.OrderService;
+import com.example.logic.exceptions.BadDrinkAddRequest;
 import com.example.logic.exceptions.DrinkNotFoundException;
-import com.example.logic.model.Cart;
-import com.example.logic.model.BasicDrink;
-import com.example.logic.model.dto.DrinkWithTopping;
-import net.jodah.expiringmap.ExpiringMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.logic.model.dto.Menu;
+import com.example.logic.model.dto.TemporaryCart;
+import com.example.logic.model.dto.DrinkWithToppings;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+class AddDrink implements Serializable {
+    private String drink;
+    private Map<String, Integer> toppings;
+    private UUID cartId;
+
+    void validate() {
+        if (getDrink() == null) {
+            throw new BadDrinkAddRequest();
+        }
+    }
+}
 
 @RestController
+@AllArgsConstructor
 public class OrderController {
 
     private OrderService service;
 
-    private static Map<UUID, List<DrinkWithTopping>> crunchifyMap = ExpiringMap.builder()
-            .expiration(5, TimeUnit.MINUTES)
-            .build();
+    @PostMapping("/addDrinkToCart")
+    public TemporaryCart addDrinkToCart(@NonNull @RequestBody AddDrink data) {
+        data.validate();
 
-    @PostMapping("/addDrinkToChart")
-    public UUID addDrinkToChart(String type, String topping, UUID sessionID) {
-        DrinkWithTopping drink = service.getDrink(type, topping);
+        final DrinkWithToppings drink = service.getDrinkWithToppings(data.getDrink(), data.getToppings());
+
         if (drink == null) {
-            throw new DrinkNotFoundException(type, topping);
+            throw new DrinkNotFoundException(data.getDrink(), data.getToppings().keySet());
         }
-        if (sessionID == null || !crunchifyMap.containsKey(sessionID)) {
-            sessionID = UUID.randomUUID();
-        }
-        crunchifyMap.compute(sessionID, (k, v) -> {
-            v = v != null ? new ArrayList<>(v) : new ArrayList<>();
-            v.add(drink);
-            return v;
-        });
-        return sessionID;
+
+        return service.addDrinkToTheCart(data.getCartId(), drink);
     }
 
     @PostMapping("")
-    public void putOrder(UUID sessionId) {
-        List<DrinkWithTopping> drinkWithToppings = crunchifyMap.get(sessionId);
-
+    public TemporaryCart putOrder(@NonNull @RequestParam final UUID cartId) {
+        return service.putOrder(cartId);
     }
 
     @GetMapping("/getCart")
-    public Cart getCart(UUID userId) {
-        return new Cart();
+    public TemporaryCart getCart(@NonNull @PathVariable final UUID cartId) {
+        return service.getTemporaryCartById(cartId);
+    }
+
+    @GetMapping("/getMenu")
+    public Menu getMenu() {
+        return service.getMenu();
     }
 }
