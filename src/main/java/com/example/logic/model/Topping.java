@@ -1,8 +1,6 @@
 package com.example.logic.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,13 +14,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity(name = "topping")
+@Entity
+@Table(name = "topping")
 public class Topping implements Serializable {
 
-    @JsonIgnore
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     private String name;
     private BigDecimal price;
 

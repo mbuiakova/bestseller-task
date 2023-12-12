@@ -1,6 +1,5 @@
 package com.example.logic.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,16 +14,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity(name = "drink")
-public class BasicDrink implements Serializable {
+@Entity
+@Table(name = "orders", schema = "public")
+public class Order implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-    private String name;
-    private BigDecimal price;
+    private BigDecimal sum;
 
-    public BasicDrink(final String name, final BigDecimal price) {
-        this(UUID.randomUUID(), name, price);
+    public Order(final BigDecimal sum) {
+        this.sum = sum;
     }
 }

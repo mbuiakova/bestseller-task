@@ -1,12 +1,17 @@
-package com.example.logic;
+package com.example.logic.service;
 
+import com.example.logic.exceptions.CartNotFoundException;
 import com.example.logic.model.BasicDrink;
+import com.example.logic.model.Order;
 import com.example.logic.model.Topping;
 import com.example.logic.model.dto.DrinkWithToppings;
 import com.example.logic.model.dto.Menu;
-import com.example.logic.model.dto.TemporaryCart;
+import com.example.logic.model.dto.Cart;
+import com.example.logic.model.repo.OrderRepository;
 import com.example.logic.model.repo.DrinkRepository;
 import com.example.logic.model.repo.ToppingRepository;
+import com.example.logic.model.repo.ToppingUsageRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.jodah.expiringmap.ExpiringMap;
 import org.springframework.data.util.Pair;
@@ -21,35 +26,17 @@ import static org.springframework.data.util.Pair.toMap;
 @AllArgsConstructor
 public class OrderService {
     private static final Integer SESSION_DURATION_MINUTES = 5;
-    private DrinkRepository drinkRepository;
-    private ToppingRepository toppingRepository;
+    private final OrderRepository orderRepository;
+    private final DrinkRepository drinkRepository;
+    private final ToppingRepository toppingRepository;
+    private final ToppingUsageRepository toppingUsageRepository;
 
-    private static final ExpiringMap<UUID, TemporaryCart> temporaryCarts = ExpiringMap.builder()
+    private static final ExpiringMap<UUID, Cart> carts = ExpiringMap.builder()
             .expiration(SESSION_DURATION_MINUTES, TimeUnit.MINUTES)
             .build();
 
-    public Optional<BasicDrink> getDrinkById(final UUID drinkId) {
-        return drinkRepository.findById(drinkId);
-    }
-
-    public Optional<Topping> getToppingById(final UUID toppingId) {
-        return toppingRepository.findById(toppingId);
-    }
-
-    public Optional<BasicDrink> getDrinkByName(final String drinkName) {
-        return drinkRepository.findByName(drinkName);
-    }
-
-    public Optional<Topping> getToppingByName(final String toppingName) {
-        return toppingRepository.findByName(toppingName);
-    }
-
-    public DrinkWithToppings getDrinkWithTopping(final String drinkName, final String toppingName) {
-        return getDrinkWithToppings(drinkName, Map.of(toppingName, 1));
-    }
-
     public DrinkWithToppings getDrinkWithToppings(final String drinkName, final Map<String, Integer> toppingsNamesWithQuantity) {
-        Optional<BasicDrink> drinkOptional = drinkRepository.findByName(drinkName);
+        final Optional<BasicDrink> drinkOptional = drinkRepository.findByName(drinkName);
 
         if (drinkOptional.isEmpty()) {
             // TODO throw a good exception
@@ -82,49 +69,61 @@ public class OrderService {
         return new DrinkWithToppings(drinkOptional.get(), toppings);
     }
 
-    private TemporaryCart createNewTemporaryCart() {
-        final TemporaryCart temporaryCart = new TemporaryCart();
-        temporaryCarts.put(temporaryCart.getCartId(), temporaryCart);
-        return temporaryCart;
-    }
+    @Transactional
+    public Order putOrder(final UUID cartId) {
+        final Cart cart = getCartById(cartId);
 
-    private UUID getCurrentOrNewSessionIdAndResetExpiration(final UUID cartId) {
-        if (cartId == null || !temporaryCarts.containsKey(cartId)) {
-            return createNewTemporaryCart().getCartId();
+        if (cart == null) {
+            throw new CartNotFoundException(cartId);
         }
 
-        temporaryCarts.resetExpiration(cartId);
-        return cartId;
+        final Order saved = orderRepository.saveAndFlush(new Order(cart.getTotalPrice()));
+        cart.getDrinks()
+                .stream()
+                .flatMap(d -> d.getToppings().entrySet().stream())
+                .forEach(entry -> toppingUsageRepository.updateToppingUsagesByIdIncrementingUsage(
+                        entry.getKey().getId(),
+                        entry.getValue()));
+        carts.remove(cartId);
+        return saved;
     }
 
-    public TemporaryCart getTemporaryCartById(final UUID cartId) {
-        temporaryCarts.resetExpiration(cartId);
-        return temporaryCarts.get(cartId);
+    public Cart getCartById(final UUID cartId) {
+        carts.resetExpiration(cartId);
+        return carts.get(cartId);
     }
 
-    public TemporaryCart addDrinkToTheCart(UUID cartId, final DrinkWithToppings drink) {
+    public Cart addDrinkToTheCart(UUID cartId, final DrinkWithToppings drink) {
         cartId = getCurrentOrNewSessionIdAndResetExpiration(cartId);
 
-        temporaryCarts.compute(cartId, (k, v) -> {
+        carts.compute(cartId, (k, v) -> {
             if (v == null) {
-                v = new TemporaryCart(drink);
+                v = new Cart(drink);
             } else {
                 v.addDrink(drink);
             }
             return v;
         });
 
-        return getTemporaryCartById(cartId);
+        return getCartById(cartId);
     }
 
-    public TemporaryCart putOrder(final UUID cartId) {
-        final TemporaryCart temporaryCart = getTemporaryCartById(cartId);
-        // TODO save cart to database
-        temporaryCarts.remove(cartId);
-        return temporaryCart;
+    private Cart addNewCart() {
+        final Cart cart = new Cart();
+        carts.put(cart.getCartId(), cart);
+        return cart;
     }
 
     public Menu getMenu() {
         return new Menu(drinkRepository.findAll(), toppingRepository.findAll());
+    }
+
+    private UUID getCurrentOrNewSessionIdAndResetExpiration(final UUID cartId) {
+        if (cartId == null || !carts.containsKey(cartId)) {
+            return addNewCart().getCartId();
+        }
+
+        carts.resetExpiration(cartId);
+        return cartId;
     }
 }

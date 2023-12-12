@@ -18,22 +18,45 @@ CREATE TABLE ORDERS (
     PRIMARY KEY (id)
 );
 
-CREATE TABLE ORDER_LINES(
-    id uuid,
-    order_id uuid,
-    drink_id uuid,
-    topping_id uuid,
-    PRIMARY KEY (id),
-    FOREIGN KEY (order_id) REFERENCES ORDERS(id),
-    FOREIGN KEY (drink_id) REFERENCES DRINK(id),
-    FOREIGN KEY (topping_id) REFERENCES TOPPING(id)
-);
+-- CREATE TABLE ORDER_LINES(
+--     id uuid,
+--     order_id uuid,
+--     drink_id uuid,
+--     topping_id uuid,
+--     PRIMARY KEY (id),
+--     FOREIGN KEY (order_id) REFERENCES "orders"(id),
+--     FOREIGN KEY (drink_id) REFERENCES DRINK(id),
+--     FOREIGN KEY (topping_id) REFERENCES TOPPING(id)
+-- );
 
 CREATE TABLE ADMIN(
     id uuid,
     name varchar,
     PRIMARY KEY (id)
 );
+
+CREATE TABLE TOPPING_USAGE(
+    topping_id uuid,
+    used_count INTEGER NOT NULL,
+    FOREIGN KEY (topping_id) REFERENCES TOPPING(id) ON DELETE CASCADE
+);
+
+CREATE OR REPLACE FUNCTION add_topping_usage_entry()
+    RETURNS trigger AS
+$BODY$
+BEGIN
+    INSERT INTO TOPPING_USAGE(topping_id, used_count) VALUES (NEW.id, 0);
+
+    RETURN NEW;
+END
+$BODY$
+    LANGUAGE plpgsql VOLATILE
+                     COST 100;
+
+CREATE OR REPLACE TRIGGER TOPPING_CREATE_TRIGGER
+    AFTER INSERT ON TOPPING
+    FOR EACH ROW
+    EXECUTE FUNCTION add_topping_usage_entry();
 
 -- Filling with data.
 INSERT INTO DRINK(id, name, price) VALUES

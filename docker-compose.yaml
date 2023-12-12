@@ -7,10 +7,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=test_db
-    ports:
-      - "5432:5432"
-    networks:
-      - default
+#    ports:
+#      - "5432:5432"
+#    networks:
+#      - default
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
@@ -18,3 +18,15 @@ services:
       retries: 5
     logging:
       driver: none
+
+  app:
+    image: maryjein/bestseller:latest
+    environment:
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_URL=postgresql://postgres:5432/test_db
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
