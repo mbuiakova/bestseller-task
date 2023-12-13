@@ -8,6 +8,9 @@ import lombok.Getter;
 import java.io.Serializable;
 import java.util.Collection;
 
+/**
+ * Encapsulates the user menu: contains the available drinks and toppings.
+ */
 @Getter
 @AllArgsConstructor
 public class Menu implements Serializable {

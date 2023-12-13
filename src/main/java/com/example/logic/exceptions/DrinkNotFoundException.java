@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * An exception which should be thrown in case a drink cannot be found.
+ */
 @ResponseStatus(value= HttpStatus.NOT_FOUND, reason="No such drink")
 public class DrinkNotFoundException extends RuntimeException {
 

@@ -1,6 +1,5 @@
 package com.example.logic.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +10,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * An entity for the drink table.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -23,8 +25,4 @@ public class BasicDrink implements Serializable {
     private UUID id;
     private String name;
     private BigDecimal price;
-
-    public BasicDrink(final String name, final BigDecimal price) {
-        this(UUID.randomUUID(), name, price);
-    }
 }

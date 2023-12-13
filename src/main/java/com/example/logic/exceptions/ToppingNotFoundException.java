@@ -11,4 +11,8 @@ public class ToppingNotFoundException extends RuntimeException {
     public ToppingNotFoundException(final UUID topping) {
         super(String.format("Topping with id=%s doesn't exist.", topping));
     }
+
+    public ToppingNotFoundException(final Collection<String> toppingNames) {
+        super(String.format("Toppings with these names do not exist: %s", toppingNames));
+    }
 }

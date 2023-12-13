@@ -11,6 +11,9 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * An entity for the topping_usage table.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

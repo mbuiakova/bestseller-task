@@ -7,6 +7,9 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
+/**
+ * Encapsulates a topping with its use count.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

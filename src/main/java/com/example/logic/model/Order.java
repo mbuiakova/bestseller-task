@@ -10,12 +10,15 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * An entity for the orders table.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "orders", schema = "public")
+@Table(name = "orders")
 public class Order implements Serializable {
 
     @Id

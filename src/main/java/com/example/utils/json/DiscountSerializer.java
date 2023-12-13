@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
 
+/**
+ * Serialises the discount object as a string from its description.
+ */
 public class DiscountSerializer
         extends JsonSerializer<Discount>
 {

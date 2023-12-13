@@ -9,11 +9,16 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * Encapsulates a temporary user cart, which can later be used to place an order.
+ */
+@Slf4j
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +35,10 @@ public class Cart implements Serializable {
         new DrinksCountThresholdOneFreeDiscount(3)
     );
 
+    /**
+     * Creates a cart with one drink in it.
+     * @param drink The drink the cart should have added.
+     */
     public Cart(final DrinkWithToppings drink) {
         addDrink(drink);
     }
@@ -52,9 +61,14 @@ public class Cart implements Serializable {
         applicableDiscount.ifPresent(discount -> {
             totalPrice = discount.getCartTotalPriceWithDiscount(this);
             appliedDiscount = discount;
+            log.info(String.format("Applied discount (%s) for the cart (%s).", discount.getDescription(), getCartId()));
         });
     }
 
+    /**
+     * Adds a new drink to this cart.
+     * @param drink A drink to add to this cart.
+     */
     public void addDrink(final DrinkWithToppings drink) {
         drinks.add(drink);
         countSum();

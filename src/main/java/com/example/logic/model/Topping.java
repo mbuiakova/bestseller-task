@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * An entity for the topping table.
+ */
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -23,8 +26,4 @@ public class Topping implements Serializable {
     private UUID id;
     private String name;
     private BigDecimal price;
-
-    public Topping(final String name, final BigDecimal price) {
-        this(UUID.randomUUID(), name, price);
-    }
 }

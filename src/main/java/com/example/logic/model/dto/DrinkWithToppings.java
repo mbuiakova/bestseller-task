@@ -12,6 +12,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
+/**
+ * Encapsulates a drink with toppings.
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -53,18 +56,11 @@ public class DrinkWithToppings implements Serializable {
                 .add(drink.getPrice());
     }
 
+    /**
+     * Adds a topping to this drink
+     * @param topping A topping to add.
+     */
     public void addTopping(final Topping topping) {
         toppings.put(topping, toppings.getOrDefault(topping, 0) + 1);
-    }
-
-    public void removeTopping(final Topping topping) {
-        if (toppings.containsKey(topping)) {
-            final Integer quantity = toppings.get(topping);
-            if (quantity <= 1) {
-                toppings.remove(topping);
-            } else {
-                toppings.put(topping, quantity - 1);
-            }
-        }
     }
 }

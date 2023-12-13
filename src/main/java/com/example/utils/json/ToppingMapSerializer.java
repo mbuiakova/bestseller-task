@@ -12,14 +12,20 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
+/**
+ * A helper class for serializing a topping with quantity.
+ */
 @AllArgsConstructor
 @Getter
 @Setter
-class ToppingWithQuantity implements Serializable{
+class ToppingWithQuantity implements Serializable {
     private final Topping topping;
     private final Integer quantity;
 }
 
+/**
+ * Serializes a Map of toppings and quantity.
+ */
 public class ToppingMapSerializer
         extends JsonSerializer<Map<Topping, Integer>>
 {
