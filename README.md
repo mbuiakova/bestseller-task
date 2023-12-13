@@ -19,6 +19,11 @@ cd <repository>
 docker compose up
 ```
 
+## Documentation
+
+The public parts of the code are well-documented with Javadoc.
+The REST API documentation is automatically generated and is available on the `/documentation` endpoint.
+
 ## License
 
 Licensed with the "no-license" license.
