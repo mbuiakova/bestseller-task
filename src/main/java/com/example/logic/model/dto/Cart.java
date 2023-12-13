@@ -26,7 +26,7 @@ public class Cart implements Serializable {
 
     private final UUID cartId = UUID.randomUUID();
     private final List<DrinkWithToppings> drinks = new ArrayList<>();
-    private BigDecimal totalPrice;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
     @JsonSerialize(using = DiscountSerializer.class)
     private Discount appliedDiscount = null;
 

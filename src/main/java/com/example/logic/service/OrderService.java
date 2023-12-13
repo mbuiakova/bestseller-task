@@ -156,6 +156,14 @@ public class OrderService {
     }
 
     /**
+     * Creates a new cart.
+     * @return A cart object.
+     */
+    public Cart createNewCart() {
+        return addNewCart();
+    }
+
+    /**
      * Returns the menu: the available drinks and toppings.
      *
      * @return A menu object with all available drinks and toppings.

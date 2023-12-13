@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * An object which is used as a REST request for adding a drink to a cart.
@@ -21,7 +20,6 @@ public class AddDrinkRequest implements Serializable {
 
     private String drink;
     private Map<String, Integer> toppings;
-    private UUID cartId;
 
     /**
      * Validates the objects fields.

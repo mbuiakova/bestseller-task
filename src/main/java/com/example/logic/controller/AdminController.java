@@ -22,12 +22,12 @@ public class AdminController {
     private final ToppingService toppingService;
     private final DrinkService drinkService;
 
-    @GetMapping("/getAllDrinks")
+    @GetMapping("/drinks")
     public List<BasicDrink> getAllDrinks() {
         return drinkService.getAllDrinks();
     }
 
-    @GetMapping("/getDrink/{id}")
+    @GetMapping("/drinks/{id}")
     public BasicDrink getDrinkById(@NonNull @PathVariable final UUID id) {
         final BasicDrink drink = drinkService.getDrinkById(id).orElse(null);
 
@@ -38,22 +38,22 @@ public class AdminController {
         return drink;
     }
 
-    @PostMapping("/updateOrCreateDrink")
+    @PostMapping("/drinks")
     public BasicDrink updateOrCreateDrink(@NonNull @RequestBody final BasicDrink drink) {
         return drinkService.saveDrink(drink);
     }
 
-    @DeleteMapping("/deleteDrink/{id}")
+    @DeleteMapping("/drinks/{id}")
     public void deleteDrinkById(@NonNull @PathVariable final UUID id) {
         drinkService.deleteDrink(id);
     }
 
-    @GetMapping("/getAllToppings")
+    @GetMapping("/toppings")
     public List<Topping> getAllToppings() {
         return toppingService.getAllToppings();
     }
 
-    @GetMapping("/getTopping/{id}")
+    @GetMapping("/toppings/{id}")
     public Topping getToppingById(@NonNull @PathVariable final UUID id) {
         final Topping topping = toppingService.getToppingById(id).orElse(null);
 
@@ -64,17 +64,17 @@ public class AdminController {
         return topping;
     }
 
-    @PostMapping("/updateOrCreateTopping")
+    @PostMapping("/toppings")
     public Topping updateOrCreateDrink(@NonNull @RequestBody final Topping topping) {
         return toppingService.saveTopping(topping);
     }
 
-    @DeleteMapping("/deleteTopping/{id}")
+    @DeleteMapping("/toppings/{id}")
     public void deleteToppingById(@NonNull @PathVariable final UUID id) {
         toppingService.deleteTopping(id);
     }
 
-    @GetMapping("/getTopUsedToppings")
+    @GetMapping("/top-toppings")
     public Collection<ToppingWithUseCount> getTopUsedToppings() {
         return toppingService.getTopToppings();
     }

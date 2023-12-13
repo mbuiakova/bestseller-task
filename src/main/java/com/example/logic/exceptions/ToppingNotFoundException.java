@@ -1,18 +1,17 @@
 package com.example.logic.exceptions;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.UUID;
 
-@ResponseStatus(value= HttpStatus.NOT_FOUND, reason="No such topping")
-public class ToppingNotFoundException extends RuntimeException {
+public class ToppingNotFoundException extends ResponseStatusException {
     public ToppingNotFoundException(final UUID topping) {
-        super(String.format("Topping with id=%s doesn't exist.", topping));
+        super(HttpStatus.NOT_FOUND, String.format("Topping with id=%s doesn't exist.", topping));
     }
 
     public ToppingNotFoundException(final Collection<String> toppingNames) {
-        super(String.format("Toppings with these names do not exist: %s", toppingNames));
+        super(HttpStatus.NOT_FOUND, String.format("Toppings with these names do not exist: %s", toppingNames));
     }
 }
