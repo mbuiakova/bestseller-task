@@ -24,3 +24,15 @@ jobs:
 #
 #      - name: Run tests
 #        run: TODO
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build docker image
+        run: mvn spring-boot:build-image -Dspring-boot.build-image.imageName=maryjein/bestseller:latest
+
+      - name: Publish docker image
+        run: docker push maryjein/bestseller:latest
