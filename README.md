@@ -22,7 +22,7 @@ docker compose up
 ## Documentation
 
 The public parts of the code are well-documented with Javadoc.
-The REST API documentation is automatically generated and is available on the `/documentation` endpoint.
+The REST API documentation is automatically generated and is available on the `/` endpoint.
 
 ## License
 
