@@ -19,11 +19,8 @@ jobs:
           architecture: x64
           cache: maven
 
-      - name: Build
+      - name: Build and test
         run: mvn --batch-mode --update-snapshots verify
-#
-#      - name: Run tests
-#        run: TODO
 
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
